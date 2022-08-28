@@ -58,6 +58,8 @@ spec:
       steps {
         container('tools') {
             sshagent(credentials: ['github_ssh']) {
+                [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                ssh-keyscan -t ed-25519 github.com >> ~/.ssh/known_hosts
                 sh "git clone https://${env.HELM_GIT_REPO_URL}"
                 sh "git config --global user.email ${env.GIT_REPO_EMAIL}"
                  // install wq
