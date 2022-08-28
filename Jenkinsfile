@@ -78,7 +78,7 @@ spec:
                   pwd
                   git add values.yaml
                   git commit -m 'Triggered Build'
-                  git push https://AlteredStorm@github.com/AlteredStorm/rsvpapp-helm-cicd.git
+                  git push ssh://AlteredStorm@github.com/AlteredStorm/rsvpapp-helm-cicd.git
                 '''
              }
           }
