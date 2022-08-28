@@ -49,13 +49,6 @@ spec:
     }
     stage('Deploy') {
       environment {
-          GIT_CREDS = sshagent(credentials: ['github_ssh']) {
-          sh '''
-                [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
-                ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-                ssh maximilian.wadle@gmail.com
-            '''
-          }
         HELM_GIT_REPO_URL = "github.com/AlteredStorm/rsvpapp-helm-cicd.git"
         GIT_REPO_EMAIL = 'maximilian.wadle@gmail.com'
         GIT_REPO_BRANCH = "master"
@@ -64,28 +57,30 @@ spec:
       }
       steps {
         container('tools') {
-            sh "git clone https://${env.HELM_GIT_REPO_URL}"
-            sh "git config --global user.email ${env.GIT_REPO_EMAIL}"
-             // install wq
-            sh "wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64.tar.gz"
-            sh "tar xvf yq_linux_amd64.tar.gz"
-            sh "mv yq_linux_amd64 /usr/bin/yq"
-            sh "git checkout -b master"
-          dir("rsvpapp-helm-cicd") {
-              sh "git checkout ${env.GIT_REPO_BRANCH}"
-            //install done
-            sh '''#!/bin/bash
-              echo $GIT_REPO_EMAIL
-              echo $GIT_COMMIT
-              ls -lth
-              yq eval '.image.repository = env(IMAGE_REPO)' -i values.yaml
-              yq eval '.image.tag = env(GIT_COMMIT)' -i values.yaml
-              cat values.yaml
-              pwd
-              git add values.yaml
-              git commit -m 'Triggered Build'
-              git push https://$GIT_CREDS_USR:$GIT_CREDS_PSW@github.com/$GIT_CREDS_USR/rsvpapp-helm-cicd.git
-            '''
+            sshagent(credentials: ['github_ssh']) {
+                sh "git clone https://${env.HELM_GIT_REPO_URL}"
+                sh "git config --global user.email ${env.GIT_REPO_EMAIL}"
+                 // install wq
+                sh "wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64.tar.gz"
+                sh "tar xvf yq_linux_amd64.tar.gz"
+                sh "mv yq_linux_amd64 /usr/bin/yq"
+                sh "git checkout -b master"
+              dir("rsvpapp-helm-cicd") {
+                  sh "git checkout ${env.GIT_REPO_BRANCH}"
+                //install done
+                sh '''#!/bin/bash
+                  echo $GIT_REPO_EMAIL
+                  echo $GIT_COMMIT
+                  ls -lth
+                  yq eval '.image.repository = env(IMAGE_REPO)' -i values.yaml
+                  yq eval '.image.tag = env(GIT_COMMIT)' -i values.yaml
+                  cat values.yaml
+                  pwd
+                  git add values.yaml
+                  git commit -m 'Triggered Build'
+                  git push https://AlteredStorm@github.com/AlteredStorm/rsvpapp-helm-cicd.git
+                '''
+             }
           }
         }
       }
