@@ -59,7 +59,7 @@ spec:
         container('tools') {
             sshagent(credentials: ['github_ssh']) {
                 sh "[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh"
-                sh "ssh-keyscan -t ed-25519 github.com >> ~/.ssh/known_hosts"
+                sh "ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts"
                 sh "git clone https://${env.HELM_GIT_REPO_URL}"
                 sh "git config --global user.email ${env.GIT_REPO_EMAIL}"
                  // install wq
@@ -67,8 +67,8 @@ spec:
                 sh "tar xvf yq_linux_amd64.tar.gz"
                 sh "mv yq_linux_amd64 /usr/bin/yq"
                 sh "git checkout -b master"
-              dir("rsvpapp-helm-cicd") {
-                  sh "git checkout ${env.GIT_REPO_BRANCH}"
+                dir("rsvpapp-helm-cicd") {
+                sh "git checkout ${env.GIT_REPO_BRANCH}"
                 //install done
                 sh '''#!/bin/bash
                   echo $GIT_REPO_EMAIL
