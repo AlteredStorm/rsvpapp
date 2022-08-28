@@ -49,7 +49,7 @@ spec:
     }
     stage('Deploy') {
       environment {
-        GIT_CREDS = credentials('github_ssh')
+        GIT_CREDS = credentials('github')
         HELM_GIT_REPO_URL = "github.com/AlteredStorm/rsvpapp-helm-cicd.git"
         GIT_REPO_EMAIL = 'maximilian.wadle@gmail.com'
         GIT_REPO_BRANCH = "master"
